@@ -35,6 +35,14 @@ friccion = 0.99
 velocidad_rotacion = 4
 
 # =========================
+# DISPAROS
+# =========================
+
+disparos = []
+
+velocidad_disparo = 12
+
+# =========================
 # BUCLE PRINCIPAL
 # =========================
 
@@ -49,6 +57,25 @@ while True:
         if evento.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+                    # Disparo
+        if evento.type == pygame.KEYDOWN:
+
+            if evento.key == pygame.K_SPACE:
+
+                radianes = math.radians(angulo)
+
+                disparo_x = nave_x
+                disparo_y = nave_y
+
+                disparo_vel_x = math.sin(radianes) * velocidad_disparo
+                disparo_vel_y = -math.cos(radianes) * velocidad_disparo
+
+                disparos.append([
+                    disparo_x,
+                    disparo_y,
+                    disparo_vel_x,
+                    disparo_vel_y
+                ])
 
     # =========================
     # TECLAS
@@ -100,6 +127,24 @@ while True:
         nave_y = ALTO
 
     # =========================
+    # ACTUALIZAR DISPAROS
+    # =========================
+
+    for disparo in disparos:
+
+        disparo[0] += disparo[2]
+        disparo[1] += disparo[3]
+
+    # Eliminar disparos fuera de pantalla
+    disparos = [
+        disparo for disparo in disparos
+        if 0 < disparo[0] < ANCHO
+        and 0 < disparo[1] < ALTO
+    ]
+    
+
+
+    # =========================
     # DIBUJO
     # =========================
 
@@ -130,6 +175,15 @@ while True:
         ],
         2
     )
+    # Dibujar disparos
+    for disparo in disparos:
+
+        pygame.draw.circle(
+            pantalla,
+            (0, 255, 255),
+            (int(disparo[0]), int(disparo[1])),
+            3
+        )
 
     # =========================
     # ACTUALIZAR

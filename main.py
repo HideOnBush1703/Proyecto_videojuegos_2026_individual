@@ -1,6 +1,7 @@
 import pygame
 import sys
 import math
+import random
 
 # Inicializar pygame
 pygame.init()
@@ -41,6 +42,31 @@ velocidad_rotacion = 4
 disparos = []
 
 velocidad_disparo = 12
+
+# =========================
+# ASTEROIDES
+# =========================
+
+asteroides = []
+
+cantidad_asteroides = 5
+for i in range(cantidad_asteroides):
+
+    x = random.randint(0, ANCHO)
+    y = random.randint(0, ALTO)
+
+    velocidad_x_asteroide = random.uniform(-2, 2)
+    velocidad_y_asteroide = random.uniform(-2, 2)
+
+    radio = random.randint(20, 40)
+
+    asteroides.append([
+        x,
+        y,
+        velocidad_x_asteroide,
+        velocidad_y_asteroide,
+        radio
+    ])
 
 # =========================
 # BUCLE PRINCIPAL
@@ -142,7 +168,28 @@ while True:
         and 0 < disparo[1] < ALTO
     ]
     
+        # =========================
+    # ACTUALIZAR ASTEROIDES
+    # =========================
 
+    for asteroide in asteroides:
+
+        asteroide[0] += asteroide[2]
+        asteroide[1] += asteroide[3]
+
+        # Wrapping horizontal
+        if asteroide[0] > ANCHO:
+            asteroide[0] = 0
+
+        if asteroide[0] < 0:
+            asteroide[0] = ANCHO
+
+        # Wrapping vertical
+        if asteroide[1] > ALTO:
+            asteroide[1] = 0
+
+        if asteroide[1] < 0:
+            asteroide[1] = ALTO
 
     # =========================
     # DIBUJO
@@ -175,6 +222,18 @@ while True:
         ],
         2
     )
+
+        # Dibujar asteroides
+    for asteroide in asteroides:
+
+        pygame.draw.circle(
+            pantalla,
+            (180, 180, 180),
+            (int(asteroide[0]), int(asteroide[1])),
+            asteroide[4],
+            2
+        )
+
     # Dibujar disparos
     for disparo in disparos:
 
@@ -191,4 +250,4 @@ while True:
 
     pygame.display.update()
 
-    clock.tick(60)
+    clock.tick(60)#aaaaaaa f

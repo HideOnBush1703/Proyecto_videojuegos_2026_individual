@@ -190,6 +190,56 @@ while True:
 
         if asteroide[1] < 0:
             asteroide[1] = ALTO
+    
+    # =========================
+    # COLISIONES DISPAROS VS ASTEROIDES
+    # =========================
+
+    disparos_a_eliminar = []
+    asteroides_a_eliminar = []
+
+    for disparo in disparos:
+
+        for asteroide in asteroides:
+
+            distancia = math.sqrt(
+                (disparo[0] - asteroide[0]) ** 2 +
+                (disparo[1] - asteroide[1]) ** 2
+            )
+
+            if distancia < asteroide[4]:
+
+                disparos_a_eliminar.append(disparo)
+                asteroides_a_eliminar.append(asteroide)
+
+    # Eliminar disparos
+    for disparo in disparos_a_eliminar:
+
+        if disparo in disparos:
+            disparos.remove(disparo)
+
+    # Eliminar asteroides
+    for asteroide in asteroides_a_eliminar:
+
+        if asteroide in asteroides:
+            asteroides.remove(asteroide)
+
+            # Crear nuevo asteroide
+            x = random.randint(0, ANCHO)
+            y = random.randint(0, ALTO)
+
+            velocidad_x_asteroide = random.uniform(-2, 2)
+            velocidad_y_asteroide = random.uniform(-2, 2)
+
+            radio = random.randint(20, 40)
+
+            asteroides.append([
+                x,
+                y,
+                velocidad_x_asteroide,
+                velocidad_y_asteroide,
+                radio
+            ])
 
     # =========================
     # DIBUJO

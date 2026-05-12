@@ -20,6 +20,14 @@ pygame.display.set_caption("PyRoids")
 clock = pygame.time.Clock()
 
 # =========================
+# FUENTE Y SCORE
+# =========================
+
+fuente = pygame.font.SysFont("Arial", 30)
+
+score = 0
+
+# =========================
 # DATOS DE LA NAVE
 # =========================
 
@@ -211,6 +219,7 @@ while True:
 
                 disparos_a_eliminar.append(disparo)
                 asteroides_a_eliminar.append(asteroide)
+                score += 100
 
     # Eliminar disparos
     for disparo in disparos_a_eliminar:
@@ -297,6 +306,18 @@ while True:
     # =========================
     # ACTUALIZAR
     # =========================
+
+        # =========================
+        # MOSTRAR SCORE
+        # =========================
+
+        texto_score = fuente.render(
+            f"Score: {score}",
+            True,
+            (255, 255, 255)
+        )
+
+        pantalla.blit(texto_score, (20, 20))
 
     pygame.display.update()
 

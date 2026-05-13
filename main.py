@@ -40,8 +40,8 @@ velocidad_y = 0
 
 angulo = 0
 
-aceleracion = 0.2
-friccion = 0.99
+aceleracion = 0.2 #2
+friccion = 0.96 #0.99
 velocidad_rotacion = 4
 
 # =========================

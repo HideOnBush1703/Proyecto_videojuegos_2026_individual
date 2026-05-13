@@ -26,6 +26,7 @@ clock = pygame.time.Clock()
 fuente = pygame.font.SysFont("Arial", 30)
 
 score = 0
+vidas = 3
 
 # =========================
 # DATOS DE LA NAVE
@@ -251,6 +252,30 @@ while True:
             ])
 
     # =========================
+    # COLISION NAVE VS ASTEROIDES
+    # =========================
+
+    for asteroide in asteroides:
+
+        distancia_nave = math.sqrt(
+            (nave_x - asteroide[0]) ** 2 +
+            (nave_y - asteroide[1]) ** 2
+        )
+
+        if distancia_nave < asteroide[4] + 10:
+
+            vidas -= 1
+
+            # Reaparecer nave en el centro
+            nave_x = ANCHO // 2
+            nave_y = ALTO // 2
+
+            velocidad_x = 0
+            velocidad_y = 0
+
+            break
+
+    # =========================
     # DIBUJO
     # =========================
 
@@ -318,6 +343,14 @@ while True:
         )
 
         pantalla.blit(texto_score, (20, 20))
+
+    texto_vidas = fuente.render(
+        f"Vidas: {vidas}",
+        True,
+        (255, 255, 255)
+    )
+
+    pantalla.blit(texto_vidas, (20, 60))
 
     pygame.display.update()
 

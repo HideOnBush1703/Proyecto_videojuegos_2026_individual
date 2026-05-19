@@ -59,7 +59,7 @@ velocidad_disparo = 12
 
 asteroides = []
 
-cantidad_asteroides = 5
+cantidad_asteroides = 3
 for i in range(cantidad_asteroides):
 
     x = random.randint(0, ANCHO)
@@ -75,7 +75,33 @@ for i in range(cantidad_asteroides):
         y,
         velocidad_x_asteroide,
         velocidad_y_asteroide,
-        radio
+        radio,
+        1,
+        "gris"
+    ])
+
+# =========================
+# ASTEROIDES ROJOS ELITE
+# =========================
+
+for i in range(2):
+
+    x = random.randint(0, ANCHO)
+    y = random.randint(0, ALTO)
+
+    velocidad_x_asteroide = random.uniform(-4, 4)
+    velocidad_y_asteroide = random.uniform(-4, 4)
+
+    radio = random.randint(25, 45)
+
+    asteroides.append([
+        x,
+        y,
+        velocidad_x_asteroide,
+        velocidad_y_asteroide,
+        radio,
+        2,
+        "rojo"
     ])
 
 # =========================
@@ -220,8 +246,20 @@ while True:
                 if distancia < asteroide[4]:
 
                     disparos_a_eliminar.append(disparo)
-                    asteroides_a_eliminar.append(asteroide)
-                    score += 100
+
+                    # Quitar vida al asteroide
+                    asteroide[5] -= 1
+
+                    # Destruir si ya no tiene vida
+                    if asteroide[5] <= 0:
+
+                        asteroides_a_eliminar.append(asteroide)
+
+                        if asteroide[6] == "gris":
+                            score += 100
+
+                        if asteroide[6] == "rojo":
+                            score += 250
 
         # Eliminar disparos
         for disparo in disparos_a_eliminar:
@@ -249,7 +287,9 @@ while True:
                     y,
                     velocidad_x_asteroide,
                     velocidad_y_asteroide,
-                    radio
+                    radio,
+                    1,
+                    "gris"
                 ])
 
         # =========================
@@ -314,9 +354,14 @@ while True:
         # Dibujar asteroides
     for asteroide in asteroides:
 
+        color_asteroide = (180, 180, 180)
+
+        if asteroide[6] == "rojo":
+            color_asteroide = (255, 60, 60)
+
         pygame.draw.circle(
             pantalla,
-            (180, 180, 180),
+            color_asteroide,
             (int(asteroide[0]), int(asteroide[1])),
             asteroide[4],
             2

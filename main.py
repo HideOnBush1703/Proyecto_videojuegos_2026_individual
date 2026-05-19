@@ -84,13 +84,13 @@ for i in range(cantidad_asteroides):
 # ASTEROIDES ROJOS ELITE
 # =========================
 
-for i in range(2):
+for i in range(3):
 
     x = random.randint(0, ANCHO)
     y = random.randint(0, ALTO)
 
-    velocidad_x_asteroide = random.uniform(-4, 4)
-    velocidad_y_asteroide = random.uniform(-4, 4)
+    velocidad_x_asteroide = 0
+    velocidad_y_asteroide = 0
 
     radio = random.randint(25, 45)
 
@@ -204,14 +204,35 @@ while True:
             and 0 < disparo[1] < ALTO
         ]
         
-            # =========================
+        # =========================
         # ACTUALIZAR ASTEROIDES
         # =========================
 
         for asteroide in asteroides:
 
-            asteroide[0] += asteroide[2]
-            asteroide[1] += asteroide[3]
+            # Asteroides rojos perseguidores
+            if asteroide[6] == "rojo":
+
+                dx = nave_x - asteroide[0]
+                dy = nave_y - asteroide[1]
+
+                distancia = math.sqrt(dx**2 + dy**2)
+
+                if distancia != 0:
+
+                    dx /= distancia
+                    dy /= distancia
+
+                    velocidad_persecucion = 1.5
+    
+                    asteroide[0] += dx * velocidad_persecucion
+                    asteroide[1] += dy * velocidad_persecucion
+
+            # Asteroides normales
+            else:
+
+                asteroide[0] += asteroide[2]
+                asteroide[1] += asteroide[3]
 
             # Wrapping horizontal
             if asteroide[0] > ANCHO:

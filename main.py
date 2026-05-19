@@ -294,24 +294,67 @@ while True:
             if asteroide in asteroides:
                 asteroides.remove(asteroide)
 
-                # Crear nuevo asteroide
-                x = random.randint(0, ANCHO)
-                y = random.randint(0, ALTO)
+                # =========================
+                # RESPAWN ASTEROIDES
+                # =========================
 
-                velocidad_x_asteroide = random.uniform(-2, 2)
-                velocidad_y_asteroide = random.uniform(-2, 2)
+                # ASTEROIDE GRIS
+                if asteroide[6] == "gris":
 
-                radio = random.randint(20, 40)
+                    x = random.randint(0, ANCHO)
+                    y = random.randint(0, ALTO)
 
-                asteroides.append([
-                    x,
-                    y,
-                    velocidad_x_asteroide,
-                    velocidad_y_asteroide,
-                    radio,
-                    1,
-                    "gris"
-                ])
+                    velocidad_x_asteroide = random.uniform(-2, 2)
+                    velocidad_y_asteroide = random.uniform(-2, 2)
+
+                    radio = random.randint(20, 40)
+
+                    asteroides.append([
+                        x,
+                        y,
+                        velocidad_x_asteroide,
+                        velocidad_y_asteroide,
+                        radio,
+                        1,
+                        "gris"
+                    ])
+
+                # ASTEROIDE ROJO PERSEGUIDOR
+                if asteroide[6] == "rojo":
+
+                    lado = random.randint(1, 4)
+
+                    # Arriba
+                    if lado == 1:
+                        x = random.randint(0, ANCHO)
+                        y = 0
+
+                    # Abajo
+                    elif lado == 2:
+                        x = random.randint(0, ANCHO)
+                        y = ALTO
+
+                    # Izquierda
+                    elif lado == 3:
+                        x = 0
+                        y = random.randint(0, ALTO)
+
+                    # Derecha
+                    else:
+                        x = ANCHO
+                        y = random.randint(0, ALTO)
+
+                    radio = random.randint(25, 45)
+
+                    asteroides.append([
+                        x,
+                        y,
+                        0,
+                        0,
+                        radio,
+                        2,
+                        "rojo"
+                    ])
 
         # =========================
         # COLISION NAVE VS ASTEROIDES

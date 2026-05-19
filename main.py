@@ -146,15 +146,15 @@ while True:
         teclas = pygame.key.get_pressed()
 
         # Girar izquierda
-        if teclas[pygame.K_LEFT]:
+        if teclas[pygame.K_LEFT] or teclas[pygame.K_a]:
             angulo += velocidad_rotacion
 
         # Girar derecha
-        if teclas[pygame.K_RIGHT]:
+        if teclas[pygame.K_RIGHT] or teclas[pygame.K_d]:
             angulo -= velocidad_rotacion
 
         # Acelerar
-        if teclas[pygame.K_UP]:
+        if teclas[pygame.K_UP] or teclas[pygame.K_w]:
 
             radianes = math.radians(angulo)
 

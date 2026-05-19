@@ -161,6 +161,15 @@ while True:
             velocidad_x += math.sin(radianes) * aceleracion
             velocidad_y -= math.cos(radianes) * aceleracion
 
+        # Retroceder
+        if teclas[pygame.K_DOWN] or teclas[pygame.K_s]:
+
+            radianes = math.radians(angulo)
+
+            velocidad_x -= math.sin(radianes) * aceleracion * 0.7
+            velocidad_y += math.cos(radianes) * aceleracion * 0.7
+
+
         # =========================
         # MOVIMIENTO
         # =========================

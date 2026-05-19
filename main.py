@@ -147,11 +147,11 @@ while True:
 
         # Girar izquierda
         if teclas[pygame.K_LEFT] or teclas[pygame.K_a]:
-            angulo += velocidad_rotacion
+            angulo -= velocidad_rotacion
 
         # Girar derecha
         if teclas[pygame.K_RIGHT] or teclas[pygame.K_d]:
-            angulo -= velocidad_rotacion
+            angulo += velocidad_rotacion
 
         # Acelerar
         if teclas[pygame.K_UP] or teclas[pygame.K_w]:

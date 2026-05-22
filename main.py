@@ -59,11 +59,30 @@ velocidad_disparo = 12
 
 asteroides = []
 
-cantidad_asteroides = 5
+cantidad_asteroides = 3
 for i in range(cantidad_asteroides):
 
-    x = random.randint(0, ANCHO)
-    y = random.randint(0, ALTO)
+    lado = random.randint(1, 4)
+
+    # Arriba
+    if lado == 1:
+        x = random.randint(0, ANCHO)
+        y = 0
+
+    # Abajo
+    elif lado == 2:
+        x = random.randint(0, ANCHO)
+        y = ALTO
+
+    # Izquierda
+    elif lado == 3:
+        x = 0
+        y = random.randint(0, ALTO)
+
+    # Derecha
+    else:
+        x = ANCHO
+        y = random.randint(0, ALTO)
 
     velocidad_x_asteroide = random.uniform(-2, 2)
     velocidad_y_asteroide = random.uniform(-2, 2)
@@ -75,7 +94,52 @@ for i in range(cantidad_asteroides):
         y,
         velocidad_x_asteroide,
         velocidad_y_asteroide,
-        radio
+        radio,
+        1,
+        "gris"
+    ])
+
+# =========================
+# ASTEROIDES ROJOS ELITE
+# =========================
+
+for i in range(3):
+
+    lado = random.randint(1, 4)
+
+    # Arriba
+    if lado == 1:
+        x = random.randint(0, ANCHO)
+        y = 0
+
+    # Abajo
+    elif lado == 2:
+        x = random.randint(0, ANCHO)
+        y = ALTO
+
+    # Izquierda
+    elif lado == 3:
+        x = 0
+        y = random.randint(0, ALTO)
+
+    # Derecha
+    else:
+        x = ANCHO
+        y = random.randint(0, ALTO)
+
+    velocidad_x_asteroide = 0
+    velocidad_y_asteroide = 0
+
+    radio = random.randint(25, 45)
+
+    asteroides.append([
+        x,
+        y,
+        velocidad_x_asteroide,
+        velocidad_y_asteroide,
+        radio,
+        2,
+        "rojo"
     ])
 
 # =========================
@@ -120,20 +184,29 @@ while True:
         teclas = pygame.key.get_pressed()
 
         # Girar izquierda
-        if teclas[pygame.K_LEFT]:
-            angulo += velocidad_rotacion
-
-        # Girar derecha
-        if teclas[pygame.K_RIGHT]:
+        if teclas[pygame.K_LEFT] or teclas[pygame.K_a]:
             angulo -= velocidad_rotacion
 
+        # Girar derecha
+        if teclas[pygame.K_RIGHT] or teclas[pygame.K_d]:
+            angulo += velocidad_rotacion
+
         # Acelerar
-        if teclas[pygame.K_UP]:
+        if teclas[pygame.K_UP] or teclas[pygame.K_w]:
 
             radianes = math.radians(angulo)
 
             velocidad_x += math.sin(radianes) * aceleracion
             velocidad_y -= math.cos(radianes) * aceleracion
+
+        # Retroceder
+        if teclas[pygame.K_DOWN] or teclas[pygame.K_s]:
+
+            radianes = math.radians(angulo)
+
+            velocidad_x -= math.sin(radianes) * aceleracion * 0.7
+            velocidad_y += math.cos(radianes) * aceleracion * 0.7
+
 
         # =========================
         # MOVIMIENTO
@@ -178,14 +251,35 @@ while True:
             and 0 < disparo[1] < ALTO
         ]
         
-            # =========================
+        # =========================
         # ACTUALIZAR ASTEROIDES
         # =========================
 
         for asteroide in asteroides:
 
-            asteroide[0] += asteroide[2]
-            asteroide[1] += asteroide[3]
+            # Asteroides rojos perseguidores
+            if asteroide[6] == "rojo":
+
+                dx = nave_x - asteroide[0]
+                dy = nave_y - asteroide[1]
+
+                distancia = math.sqrt(dx**2 + dy**2)
+
+                if distancia != 0:
+
+                    dx /= distancia
+                    dy /= distancia
+
+                    velocidad_persecucion = 1.5
+    
+                    asteroide[0] += dx * velocidad_persecucion
+                    asteroide[1] += dy * velocidad_persecucion
+
+            # Asteroides normales
+            else:
+
+                asteroide[0] += asteroide[2]
+                asteroide[1] += asteroide[3]
 
             # Wrapping horizontal
             if asteroide[0] > ANCHO:
@@ -220,8 +314,20 @@ while True:
                 if distancia < asteroide[4]:
 
                     disparos_a_eliminar.append(disparo)
-                    asteroides_a_eliminar.append(asteroide)
-                    score += 100
+
+                    # Quitar vida al asteroide
+                    asteroide[5] -= 1
+
+                    # Destruir si ya no tiene vida
+                    if asteroide[5] <= 0:
+
+                        asteroides_a_eliminar.append(asteroide)
+
+                        if asteroide[6] == "gris":
+                            score += 100
+
+                        if asteroide[6] == "rojo":
+                            score += 250
 
         # Eliminar disparos
         for disparo in disparos_a_eliminar:
@@ -235,22 +341,67 @@ while True:
             if asteroide in asteroides:
                 asteroides.remove(asteroide)
 
-                # Crear nuevo asteroide
-                x = random.randint(0, ANCHO)
-                y = random.randint(0, ALTO)
+                # =========================
+                # RESPAWN ASTEROIDES
+                # =========================
 
-                velocidad_x_asteroide = random.uniform(-2, 2)
-                velocidad_y_asteroide = random.uniform(-2, 2)
+                # ASTEROIDE GRIS
+                if asteroide[6] == "gris":
 
-                radio = random.randint(20, 40)
+                    x = random.randint(0, ANCHO)
+                    y = random.randint(0, ALTO)
 
-                asteroides.append([
-                    x,
-                    y,
-                    velocidad_x_asteroide,
-                    velocidad_y_asteroide,
-                    radio
-                ])
+                    velocidad_x_asteroide = random.uniform(-2, 2)
+                    velocidad_y_asteroide = random.uniform(-2, 2)
+
+                    radio = random.randint(20, 40)
+
+                    asteroides.append([
+                        x,
+                        y,
+                        velocidad_x_asteroide,
+                        velocidad_y_asteroide,
+                        radio,
+                        1,
+                        "gris"
+                    ])
+
+                # ASTEROIDE ROJO PERSEGUIDOR
+                if asteroide[6] == "rojo":
+
+                    lado = random.randint(1, 4)
+
+                    # Arriba
+                    if lado == 1:
+                        x = random.randint(0, ANCHO)
+                        y = 0
+
+                    # Abajo
+                    elif lado == 2:
+                        x = random.randint(0, ANCHO)
+                        y = ALTO
+
+                    # Izquierda
+                    elif lado == 3:
+                        x = 0
+                        y = random.randint(0, ALTO)
+
+                    # Derecha
+                    else:
+                        x = ANCHO
+                        y = random.randint(0, ALTO)
+
+                    radio = random.randint(25, 45)
+
+                    asteroides.append([
+                        x,
+                        y,
+                        0,
+                        0,
+                        radio,
+                        2,
+                        "rojo"
+                    ])
 
         # =========================
         # COLISION NAVE VS ASTEROIDES
@@ -276,6 +427,31 @@ while True:
 
                 velocidad_x = 0
                 velocidad_y = 0
+
+                # Reposicionar asteroides ojo laterales
+                for asteroide_actual in asteroides:
+
+                    lado = random.randint(1, 4)
+
+                    # Arriba
+                    if lado == 1:
+                        asteroide_actual[0] = random.randint(0, ANCHO)
+                        asteroide_actual[1] = 0
+
+                    # Abajo
+                    elif lado == 2:
+                        asteroide_actual[0] = random.randint(0, ANCHO)
+                        asteroide_actual[1] = ALTO
+
+                    # Izquierda
+                    elif lado == 3:
+                        asteroide_actual[0] = 0
+                        asteroide_actual[1] = random.randint(0, ALTO)
+
+                    # Derecha
+                    else:
+                        asteroide_actual[0] = ANCHO
+                        asteroide_actual[1] = random.randint(0, ALTO)
 
                 break
 
@@ -314,9 +490,14 @@ while True:
         # Dibujar asteroides
     for asteroide in asteroides:
 
+        color_asteroide = (180, 180, 180)
+
+        if asteroide[6] == "rojo":
+            color_asteroide = (255, 60, 60)
+
         pygame.draw.circle(
             pantalla,
-            (180, 180, 180),
+            color_asteroide,
             (int(asteroide[0]), int(asteroide[1])),
             asteroide[4],
             2

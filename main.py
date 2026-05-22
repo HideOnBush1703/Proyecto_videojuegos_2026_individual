@@ -345,7 +345,7 @@ while True:
                 # DIVISION DE ASTEROIDES
                 # =========================
 
-                if asteroide[6] == "gris" and asteroide[4] > 25:
+                if asteroide[6] == "gris" and asteroide[4] > 39: ################### división
 
                     for i in range(2):
 

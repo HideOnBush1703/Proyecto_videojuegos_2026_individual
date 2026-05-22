@@ -342,6 +342,31 @@ while True:
                 asteroides.remove(asteroide)
 
                 # =========================
+                # DIVISION DE ASTEROIDES
+                # =========================
+
+                if asteroide[6] == "gris" and asteroide[4] > 25:
+
+                    for i in range(2):
+
+                        nuevo_radio = asteroide[4] // 2
+
+                        nueva_vel_x = random.uniform(-3, 3)
+                        nueva_vel_y = random.uniform(-3, 3)
+
+                        asteroides.append([
+                            asteroide[0],
+                            asteroide[1],
+                            nueva_vel_x,
+                            nueva_vel_y,
+                            nuevo_radio,
+                            1,
+                            "gris"
+                        ])
+
+
+
+                # =========================
                 # RESPAWN ASTEROIDES
                 # =========================
 

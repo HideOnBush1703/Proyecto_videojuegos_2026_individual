@@ -496,6 +496,32 @@ while True:
                 break
 
     # =========================
+    # COLISION POWER UPS
+    # =========================
+
+    powerups_a_eliminar = []
+
+    for powerup in powerups:
+
+        distancia_powerup = math.sqrt(
+            (nave_x - powerup[0]) ** 2 +
+            (nave_y - powerup[1]) ** 2
+        )
+
+        if distancia_powerup < 20:
+
+            vidas += 1
+
+            powerups_a_eliminar.append(powerup)
+
+    # Eliminar power ups recogidos
+    for powerup in powerups_a_eliminar:
+
+        if powerup in powerups:
+            powerups.remove(powerup)
+
+
+    # =========================
     # DIBUJO
     # =========================
 

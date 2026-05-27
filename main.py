@@ -100,6 +100,12 @@ for i in range(cantidad_asteroides):
     ])
 
 # =========================
+# POWER UPS
+# =========================
+
+powerups = []
+
+# =========================
 # ASTEROIDES ROJOS ELITE
 # =========================
 
@@ -141,6 +147,15 @@ for i in range(3):
         2,
         "rojo"
     ])
+
+
+# Crear primer power up de vida
+
+powerups.append([
+    random.randint(100, ANCHO - 100),
+    random.randint(100, ALTO - 100),
+    "vida"
+])
 
 # =========================
 # BUCLE PRINCIPAL
@@ -536,6 +551,16 @@ while True:
             (0, 255, 255),
             (int(disparo[0]), int(disparo[1])),
             3
+        )
+
+        # Dibujar power ups
+    for powerup in powerups:
+
+        pygame.draw.circle(
+            pantalla,
+            (0, 255, 0),
+            (int(powerup[0]), int(powerup[1])),
+            12
         )
 
     # =========================

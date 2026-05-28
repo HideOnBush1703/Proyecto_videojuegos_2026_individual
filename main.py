@@ -620,6 +620,21 @@ while True:
         2
     )
 
+    # =========================
+    # ESCUDO VISUAL
+    # =========================
+
+    if escudo_activo:
+
+        pygame.draw.circle(
+            pantalla,
+            (255, 255, 0),
+            (int(nave_x), int(nave_y)),
+            28,
+            3
+        )
+
+
         # Dibujar asteroides
     for asteroide in asteroides:
 

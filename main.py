@@ -157,6 +157,14 @@ powerups.append([
     "vida"
 ])
 
+# Crear power up de doble disparo
+
+powerups.append([
+    random.randint(100, ANCHO - 100),
+    random.randint(100, ALTO - 100),
+    "doble"
+])
+
 # =========================
 # BUCLE PRINCIPAL
 # =========================
@@ -579,12 +587,18 @@ while True:
             3
         )
 
-        # Dibujar power ups
+    # Dibujar power ups
     for powerup in powerups:
+
+        color_powerup = (0, 255, 0)
+
+        # Power up doble disparo
+        if powerup[2] == "doble":
+            color_powerup = (0, 150, 255)
 
         pygame.draw.circle(
             pantalla,
-            (0, 255, 0),
+            color_powerup,
             (int(powerup[0]), int(powerup[1])),
             12
         )

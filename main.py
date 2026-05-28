@@ -511,6 +511,10 @@ while True:
 
                     escudo_activo = False
 
+                    # Eliminar asteroide que golpeó
+                    if asteroide in asteroides:
+                        asteroides.remove(asteroide)
+
                     break
 
                 else:

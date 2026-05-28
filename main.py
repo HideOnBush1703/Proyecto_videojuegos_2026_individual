@@ -27,8 +27,10 @@ fuente = pygame.font.SysFont("Arial", 30)
 
 score = 0
 vidas = 3
+
 game_over = False
 doble_disparo = False
+escudo_activo = False
 
 # =========================
 # DATOS DE LA NAVE
@@ -166,6 +168,14 @@ powerups.append([
     "doble"
 ])
 
+# Crear power up de escudo
+
+powerups.append([
+    random.randint(100, ANCHO - 100),
+    random.randint(100, ALTO - 100),
+    "escudo"
+])
+
 # =========================
 # BUCLE PRINCIPAL
 # =========================
@@ -230,7 +240,7 @@ while True:
                         disparo_vel_x,
                         disparo_vel_y
                     ])
-                    
+
     if not game_over:
         # =========================
         # TECLAS
@@ -496,10 +506,17 @@ while True:
 
             if distancia_nave < asteroide[4] + 10:
 
-                vidas -= 1
+                # Escudo absorbe daño
+                if escudo_activo:
 
-                if vidas <= 0:
-                    game_over = True
+                    escudo_activo = False
+
+                else:
+
+                    vidas -= 1
+
+                    if vidas <= 0:
+                        game_over = True
 
                 # Reaparecer nave en el centro
                 nave_x = ANCHO // 2
@@ -557,6 +574,10 @@ while True:
             # Power up doble disparo
             if powerup[2] == "doble":
                 doble_disparo = True
+
+            # Power up escudo
+            if powerup[2] == "escudo":
+                escudo_activo = True
 
             powerups_a_eliminar.append(powerup)
 
@@ -633,6 +654,10 @@ while True:
         # Power up doble disparo
         if powerup[2] == "doble":
             color_powerup = (0, 150, 255)
+
+        # Power up escudo
+        if powerup[2] == "escudo":
+            color_powerup = (255, 255, 0)
 
         pygame.draw.circle(
             pantalla,

@@ -511,6 +511,8 @@ while True:
 
                     escudo_activo = False
 
+                    break
+
                 else:
 
                     vidas -= 1
@@ -518,39 +520,39 @@ while True:
                     if vidas <= 0:
                         game_over = True
 
-                # Reaparecer nave en el centro
-                nave_x = ANCHO // 2
-                nave_y = ALTO // 2
+                    # Reaparecer nave en el centro
+                    nave_x = ANCHO // 2
+                    nave_y = ALTO // 2
 
-                velocidad_x = 0
-                velocidad_y = 0
+                    velocidad_x = 0
+                    velocidad_y = 0
 
-                # Reposicionar asteroides ojo laterales
-                for asteroide_actual in asteroides:
+                    # Reposicionar asteroides
+                    for asteroide_actual in asteroides:
 
-                    lado = random.randint(1, 4)
+                        lado = random.randint(1, 4)
 
-                    # Arriba
-                    if lado == 1:
-                        asteroide_actual[0] = random.randint(0, ANCHO)
-                        asteroide_actual[1] = 0
+                        # Arriba
+                        if lado == 1:
+                            asteroide_actual[0] = random.randint(0, ANCHO)
+                            asteroide_actual[1] = 0
 
-                    # Abajo
-                    elif lado == 2:
-                        asteroide_actual[0] = random.randint(0, ANCHO)
-                        asteroide_actual[1] = ALTO
+                        # Abajo
+                        elif lado == 2:
+                            asteroide_actual[0] = random.randint(0, ANCHO)
+                            asteroide_actual[1] = ALTO
 
-                    # Izquierda
-                    elif lado == 3:
-                        asteroide_actual[0] = 0
-                        asteroide_actual[1] = random.randint(0, ALTO)
+                        # Izquierda
+                        elif lado == 3:
+                            asteroide_actual[0] = 0
+                            asteroide_actual[1] = random.randint(0, ALTO)
 
-                    # Derecha
-                    else:
-                        asteroide_actual[0] = ANCHO
-                        asteroide_actual[1] = random.randint(0, ALTO)
+                        # Derecha
+                        else:
+                            asteroide_actual[0] = ANCHO
+                            asteroide_actual[1] = random.randint(0, ALTO)
 
-                break
+                    break
 
     # =========================
     # COLISION POWER UPS

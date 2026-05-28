@@ -28,6 +28,7 @@ fuente = pygame.font.SysFont("Arial", 30)
 score = 0
 vidas = 3
 game_over = False
+doble_disparo = False
 
 # =========================
 # DATOS DE LA NAVE
@@ -187,18 +188,49 @@ while True:
 
                 radianes = math.radians(angulo)
 
-                disparo_x = nave_x
-                disparo_y = nave_y
+                # =========================
+                # DOBLE DISPARO
+                # =========================
 
-                disparo_vel_x = math.sin(radianes) * velocidad_disparo
-                disparo_vel_y = -math.cos(radianes) * velocidad_disparo
+                if doble_disparo:
 
-                disparos.append([
-                    disparo_x,
-                    disparo_y,
-                    disparo_vel_x,
-                    disparo_vel_y
-                ])
+                    separacion = 10
+
+                    # Bala izquierda
+                    disparos.append([
+                        nave_x - math.cos(radianes) * separacion,
+                        nave_y - math.sin(radianes) * separacion,
+                        math.sin(radianes) * velocidad_disparo,
+                        -math.cos(radianes) * velocidad_disparo
+                    ])
+
+                    # Bala derecha
+                    disparos.append([
+                        nave_x + math.cos(radianes) * separacion,
+                        nave_y + math.sin(radianes) * separacion,
+                        math.sin(radianes) * velocidad_disparo,
+                        -math.cos(radianes) * velocidad_disparo
+                    ])
+
+                # =========================
+                # DISPARO NORMAL
+                # =========================
+
+                else:
+
+                    disparo_x = nave_x
+                    disparo_y = nave_y
+
+                    disparo_vel_x = math.sin(radianes) * velocidad_disparo
+                    disparo_vel_y = -math.cos(radianes) * velocidad_disparo
+
+                    disparos.append([
+                        disparo_x,
+                        disparo_y,
+                        disparo_vel_x,
+                        disparo_vel_y
+                    ])
+                    
     if not game_over:
         # =========================
         # TECLAS
@@ -518,7 +550,13 @@ while True:
 
         if distancia_powerup < 20:
 
-            vidas += 1
+            # Power up de vida
+            if powerup[2] == "vida":
+                vidas += 1
+
+            # Power up doble disparo
+            if powerup[2] == "doble":
+                doble_disparo = True
 
             powerups_a_eliminar.append(powerup)
 

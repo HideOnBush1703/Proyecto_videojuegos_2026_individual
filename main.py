@@ -32,6 +32,9 @@ game_over = False
 doble_disparo = False
 escudo_activo = False
 
+powerup_vida_aparecio = False
+tiempo_powerup_vida = 0
+
 # =========================
 # DATOS DE LA NAVE
 # =========================
@@ -151,14 +154,6 @@ for i in range(3):
         "rojo"
     ])
 
-
-# Crear primer power up de vida
-
-powerups.append([
-    random.randint(100, ANCHO - 100),
-    random.randint(100, ALTO - 100),
-    "vida"
-])
 
 # Crear power up de doble disparo
 
@@ -576,6 +571,40 @@ while True:
                             asteroide_actual[1] = random.randint(0, ALTO)
 
                     break
+
+
+    # =========================
+    # APARICION POWER UP VIDA
+    # =========================
+
+    if score >= 10000 and not powerup_vida_aparecio:
+
+        powerups.append([
+            random.randint(100, ANCHO - 100),
+            random.randint(100, ALTO - 100),
+            "vida"
+        ])
+
+        powerup_vida_aparecio = True
+
+        tiempo_powerup_vida = pygame.time.get_ticks()
+
+    # =========================
+    # DESAPARECER POWER UP VIDA
+    # =========================
+
+    if powerup_vida_aparecio:
+
+        tiempo_actual = pygame.time.get_ticks()
+
+        if tiempo_actual - tiempo_powerup_vida > 20000:
+
+            for powerup in powerups:
+
+                if powerup[2] == "vida":
+
+                    if powerup in powerups:
+                        powerups.remove(powerup)
 
     # =========================
     # COLISION POWER UPS

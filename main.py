@@ -438,8 +438,27 @@ while True:
                 # ASTEROIDE GRIS
                 if asteroide[6] == "gris":
 
-                    x = random.randint(0, ANCHO)
-                    y = random.randint(0, ALTO)
+                    lado = random.randint(1, 4)
+
+                    # Arriba
+                    if lado == 1:
+                        x = random.randint(0, ANCHO)
+                        y = 0
+
+                    # Abajo
+                    elif lado == 2:
+                        x = random.randint(0, ANCHO)
+                        y = ALTO
+
+                    # Izquierda
+                    elif lado == 3:
+                        x = 0
+                        y = random.randint(0, ALTO)
+
+                    # Derecha
+                    else:
+                        x = ANCHO
+                        y = random.randint(0, ALTO)
 
                     velocidad_x_asteroide = random.uniform(-2, 2)
                     velocidad_y_asteroide = random.uniform(-2, 2)

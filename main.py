@@ -583,7 +583,7 @@ while True:
     # APARICION POWER UP VIDA
     # =========================
 
-    if score >= 10000 and not powerup_vida_aparecio:
+    if score >= 25000 and not powerup_vida_aparecio:
 
         powerups.append([
             random.randint(100, ANCHO - 100),
@@ -599,7 +599,7 @@ while True:
     # APARICION POWER UP ESCUDO
     # =========================
 
-    if score >= 15000 and not powerup_escudo_aparecio:
+    if score >= 30000 and not powerup_escudo_aparecio:
 
         powerups.append([
             random.randint(100, ANCHO - 100),
@@ -819,13 +819,13 @@ while True:
         # MOSTRAR SCORE
         # =========================
 
-        texto_score = fuente.render(
-            f"Score: {score}",
-            True,
-            (255, 255, 255)
-        )
+    texto_score = fuente.render(
+    f"Score: {score}",
+    True,
+    (255, 255, 255)
+    )
 
-        pantalla.blit(texto_score, (20, 20))
+    pantalla.blit(texto_score, (20, 20))
 
     texto_vidas = fuente.render(
         f"Vidas: {vidas}",

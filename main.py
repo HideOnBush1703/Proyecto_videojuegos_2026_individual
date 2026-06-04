@@ -38,6 +38,9 @@ tiempo_powerup_vida = 0
 powerup_escudo_aparecio = False
 tiempo_powerup_escudo = 0
 
+powerup_doble_aparecio = False
+tiempo_powerup_doble = 0
+
 # =========================
 # DATOS DE LA NAVE
 # =========================
@@ -156,15 +159,6 @@ for i in range(3):
         2,
         "rojo"
     ])
-
-
-# Crear power up de doble disparo
-
-powerups.append([
-    random.randint(100, ANCHO - 100),
-    random.randint(100, ALTO - 100),
-    "doble"
-])
 
 # =========================
 # BUCLE PRINCIPAL
@@ -569,6 +563,23 @@ while True:
 
 
     # =========================
+    # APARICION POWER UP DOBLE
+    # =========================
+
+    if score >= 12500 and not powerup_doble_aparecio:
+
+        powerups.append([
+            random.randint(100, ANCHO - 100),
+            random.randint(100, ALTO - 100),
+            "doble"
+        ])
+
+        powerup_doble_aparecio = True
+
+        tiempo_powerup_doble = pygame.time.get_ticks()
+
+
+    # =========================
     # APARICION POWER UP VIDA
     # =========================
 
@@ -613,6 +624,23 @@ while True:
             for powerup in powerups:
 
                 if powerup[2] == "escudo":
+
+                    if powerup in powerups:
+                        powerups.remove(powerup)
+
+    # =========================
+    # DESAPARECER POWER UP DOBLE
+    # =========================
+
+    if powerup_doble_aparecio:
+
+        tiempo_actual = pygame.time.get_ticks()
+
+        if tiempo_actual - tiempo_powerup_doble > 20000:
+
+            for powerup in powerups:
+
+                if powerup[2] == "doble":
 
                     if powerup in powerups:
                         powerups.remove(powerup)

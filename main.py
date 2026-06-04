@@ -35,6 +35,9 @@ escudo_activo = False
 powerup_vida_aparecio = False
 tiempo_powerup_vida = 0
 
+powerup_escudo_aparecio = False
+tiempo_powerup_escudo = 0
+
 # =========================
 # DATOS DE LA NAVE
 # =========================
@@ -161,14 +164,6 @@ powerups.append([
     random.randint(100, ANCHO - 100),
     random.randint(100, ALTO - 100),
     "doble"
-])
-
-# Crear power up de escudo
-
-powerups.append([
-    random.randint(100, ANCHO - 100),
-    random.randint(100, ALTO - 100),
-    "escudo"
 ])
 
 # =========================
@@ -588,6 +583,39 @@ while True:
         powerup_vida_aparecio = True
 
         tiempo_powerup_vida = pygame.time.get_ticks()
+
+    # =========================
+    # APARICION POWER UP ESCUDO
+    # =========================
+
+    if score >= 15000 and not powerup_escudo_aparecio:
+
+        powerups.append([
+            random.randint(100, ANCHO - 100),
+            random.randint(100, ALTO - 100),
+            "escudo"
+        ])
+
+        powerup_escudo_aparecio = True
+
+        tiempo_powerup_escudo = pygame.time.get_ticks()
+
+    # =========================
+    # DESAPARECER POWER UP ESCUDO
+    # =========================
+
+    if powerup_escudo_aparecio:
+
+        tiempo_actual = pygame.time.get_ticks()
+
+        if tiempo_actual - tiempo_powerup_escudo > 20000:
+
+            for powerup in powerups:
+
+                if powerup[2] == "escudo":
+
+                    if powerup in powerups:
+                        powerups.remove(powerup)
 
     # =========================
     # DESAPARECER POWER UP VIDA

@@ -30,6 +30,8 @@ vidas = 3
 
 game_over = False
 doble_disparo = False
+triple_disparo = False
+disparo_seis = False
 escudo_activo = False
 
 powerup_vida_aparecio = False
@@ -40,6 +42,9 @@ tiempo_powerup_escudo = 0
 
 powerup_doble_aparecio = False
 tiempo_powerup_doble = 0
+
+powerup_rojo_aparecio = False
+tiempo_powerup_rojo = 0
 
 # =========================
 # DATOS DE LA NAVE
@@ -181,6 +186,59 @@ while True:
             if evento.key == pygame.K_SPACE:
 
                 radianes = math.radians(angulo)
+
+                if disparo_seis:
+
+                    radianes = math.radians(angulo)
+
+                    apertura = 0.35  # más alto = más abierto
+
+                    offsets = [-2, -1, 0, 1, 2, 3]  # 6 balas
+
+                    for i in offsets:
+
+                        ang = radianes + (i * apertura * 0.2)
+
+                        disparos.append([
+                            nave_x,
+                            nave_y,
+                            math.sin(ang) * velocidad_disparo,
+                            -math.cos(ang) * velocidad_disparo
+                        ])
+
+
+                if triple_disparo:
+
+                    radianes = math.radians(angulo)
+
+                    separacion_angulo = 0.15  # apertura del disparo
+
+                    # centro
+                    disparos.append([
+                        nave_x,
+                        nave_y,
+                        math.sin(radianes) * velocidad_disparo,
+                        -math.cos(radianes) * velocidad_disparo
+                    ])
+
+                    # izquierda
+                    rad_izq = radianes - separacion_angulo
+                    disparos.append([
+                        nave_x,
+                        nave_y,
+                        math.sin(rad_izq) * velocidad_disparo,
+                        -math.cos(rad_izq) * velocidad_disparo
+                    ])
+
+                    # derecha
+                    rad_der = radianes + separacion_angulo
+                    disparos.append([
+                        nave_x,
+                        nave_y,
+                        math.sin(rad_der) * velocidad_disparo,
+                        -math.cos(rad_der) * velocidad_disparo
+                    ])
+
 
                 # =========================
                 # DOBLE DISPARO
@@ -612,6 +670,38 @@ while True:
         tiempo_powerup_escudo = pygame.time.get_ticks()
 
     # =========================
+    # APARICION POWER UP ROJO Triple
+    # =========================
+
+    if score >= 70000 and not powerup_rojo_aparecio:
+
+        powerups.append([
+            random.randint(100, ANCHO - 100),
+            random.randint(100, ALTO - 100),
+            "rojo"
+        ])
+
+        powerup_rojo_aparecio = True
+        tiempo_powerup_rojo = pygame.time.get_ticks()
+
+    # =========================
+    # DESAPARECER POWER UP ROJO
+    # =========================
+
+    if powerup_rojo_aparecio:
+
+        tiempo_actual = pygame.time.get_ticks()
+
+        if tiempo_actual - tiempo_powerup_rojo > 20000:
+
+            for powerup in powerups:
+
+                if powerup[2] == "rojo":
+
+                    if powerup in powerups:
+                        powerups.remove(powerup)
+
+    # =========================
     # DESAPARECER POWER UP ESCUDO
     # =========================
 
@@ -688,6 +778,12 @@ while True:
             # Power up escudo
             if powerup[2] == "escudo":
                 escudo_activo = True
+
+            # Power up rojo (nuevo)
+            if powerup[2] == "rojo":
+                triple_disparo = True
+                doble_disparo = False  # opcional: evita conflictos
+                disparo_seis = True
 
             powerups_a_eliminar.append(powerup)
 
@@ -775,6 +871,10 @@ while True:
     for powerup in powerups:
 
         color_powerup = (0, 255, 0)
+
+        # Power up rojo
+        if powerup[2] == "rojo":
+            color_powerup = (255, 0, 0)
 
         # Power up doble disparo
         if powerup[2] == "doble":

@@ -3,4 +3,3 @@ VIDEOJUEGO: PyRoids
 
 AUTOR: Carlos Josue Pariguana Angulo - 21140100
 
-HISTORIA:

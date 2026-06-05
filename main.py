@@ -28,11 +28,53 @@ fuente = pygame.font.SysFont("Arial", 30)
 score = 0
 vidas = 3
 
+mensaje = ""
+tiempo_mensaje = 0
+
 game_over = False
+victoria = False
+
 doble_disparo = False
 triple_disparo = False
 disparo_seis = False
 escudo_activo = False
+
+# =========================
+# JEFE FINAL
+# =========================
+
+boss_activo = False
+
+boss_x = 0
+boss_y = 0
+
+boss_spawn_x = 0
+boss_spawn_y = 0
+
+boss_target_x = ANCHO // 2
+boss_target_y = 100
+
+boss_entrando = False
+
+boss_warning = False
+boss_warning_tiempo = 0
+
+boss_direccion_texto = ""
+boss_entrada_vel = 2
+
+boss_entrando = False
+boss_entrada_vel = 2
+
+boss_radio = 120
+
+boss_vida = 700
+boss_vida_max = 700
+
+boss_fase = 1
+
+boss_disparos = []
+boss_tiempo_disparo = 0
+
 
 powerup_vida_aparecio = False
 tiempo_powerup_vida = 0
@@ -45,6 +87,52 @@ tiempo_powerup_doble = 0
 
 powerup_rojo_aparecio = False
 tiempo_powerup_rojo = 0
+
+def reposicionar_boss():
+    global boss_x, boss_y
+
+    lado = random.randint(1, 4)
+
+    if lado == 1:
+        boss_x = random.randint(0, ANCHO)
+        boss_y = 0
+    elif lado == 2:
+        boss_x = random.randint(0, ANCHO)
+        boss_y = ALTO
+    elif lado == 3:
+        boss_x = 0
+        boss_y = random.randint(0, ALTO)
+    else:
+        boss_x = ANCHO
+        boss_y = random.randint(0, ALTO)
+
+    boss_x = max(-200, min(ANCHO + 200, boss_x))
+    boss_y = max(-200, min(ALTO + 200, boss_y)) 
+
+def elegir_esquina_boss():
+    global boss_spawn_x, boss_spawn_y, boss_direccion_texto
+
+    lado = random.randint(1, 4)
+
+    if lado == 1:
+        boss_spawn_x = -200
+        boss_spawn_y = -200
+        boss_direccion_texto = "TOP LEFT"
+
+    elif lado == 2:
+        boss_spawn_x = ANCHO + 200
+        boss_spawn_y = -200
+        boss_direccion_texto = "TOP RIGHT"
+
+    elif lado == 3:
+        boss_spawn_x = -200
+        boss_spawn_y = ALTO + 200
+        boss_direccion_texto = "BOTTOM LEFT"
+
+    else:
+        boss_spawn_x = ANCHO + 200
+        boss_spawn_y = ALTO + 200
+        boss_direccion_texto = "BOTTOM RIGHT"
 
 # =========================
 # DATOS DE LA NAVE
@@ -283,7 +371,7 @@ while True:
                         disparo_vel_y
                     ])
 
-    if not game_over:
+    if not game_over and not victoria:
         # =========================
         # TECLAS
         # =========================
@@ -357,6 +445,19 @@ while True:
             if 0 < disparo[0] < ANCHO
             and 0 < disparo[1] < ALTO
         ]
+
+        # =========================
+        # DISPAROS DEL BOSS
+        # =========================
+
+        for b in boss_disparos:
+            b[0] += b[2]
+            b[1] += b[3]
+
+        boss_disparos = [
+            b for b in boss_disparos
+            if 0 < b[0] < ANCHO and 0 < b[1] < ALTO
+        ]
         
         # =========================
         # ACTUALIZAR ASTEROIDES
@@ -401,7 +502,85 @@ while True:
 
             if asteroide[1] < 0:
                 asteroide[1] = ALTO
+
+        # =========================
+        # MOVIMIENTO DEL JEFE (CORRECTO)
+        # =========================
+
+        if boss_activo:
+
+            # 1) ENTRADA INICIAL (desde esquina)
+            if boss_entrando:
+
+                dx = boss_target_x - boss_x
+                dy = boss_target_y - boss_y
+
+                distancia = math.sqrt(dx**2 + dy**2)
+
+                if distancia != 0:
+                    dx /= distancia
+                    dy /= distancia
+
+                    boss_x += dx * boss_entrada_vel
+                    boss_y += dy * boss_entrada_vel
+
+                if distancia < 5:
+                    boss_entrando = False
+                    boss_activo_real = True
+
+            # 2) MOVIMIENTO NORMAL (cuando ya entró)
+            else:
+
+                # persecución simple a la nave
+                dx = nave_x - boss_x
+                dy = nave_y - boss_y
+
+                distancia = math.sqrt(dx**2 + dy**2)
+
+                if distancia != 0:
+                    dx /= distancia
+                    dy /= distancia
+
+                    velocidad_boss = 2.0
+
+                    boss_x += dx * velocidad_boss
+                    boss_y += dy * velocidad_boss
         
+        # =========================
+        # DISPAROS DEL JEFE
+        # =========================
+
+        if boss_activo:
+
+            tiempo_actual = pygame.time.get_ticks()
+
+            intervalo = 2000  # cada 2 segundos
+
+            if boss_fase == 2:
+                intervalo = 400  # más agresivo
+
+            if tiempo_actual - boss_tiempo_disparo > intervalo:
+
+                dx = nave_x - boss_x
+                dy = nave_y - boss_y
+
+                distancia = math.sqrt(dx**2 + dy**2)
+
+                if distancia != 0:
+                    dx /= distancia
+                    dy /= distancia
+
+                boss_disparos.append([
+                    boss_x,
+                    boss_y,
+                    dx * 3,   # velocidad bala
+                    dy * 3
+                ])
+
+                boss_tiempo_disparo = tiempo_actual
+
+
+
         # =========================
         # COLISIONES DISPAROS VS ASTEROIDES
         # =========================
@@ -435,6 +614,7 @@ while True:
 
                         if asteroide[6] == "rojo":
                             score += 250
+
 
         # Eliminar disparos
         for disparo in disparos_a_eliminar:
@@ -555,6 +735,38 @@ while True:
                     ])
 
         # =========================
+        # COLISION DISPAROS VS BOSS
+        # =========================
+
+        if boss_activo:
+
+            disparos_a_boss = []
+
+            for disparo in disparos:
+
+                distancia_boss = math.sqrt(
+                    (disparo[0] - boss_x) ** 2 +
+                    (disparo[1] - boss_y) ** 2
+                )
+
+                if distancia_boss < boss_radio:
+
+                    boss_vida -= 1
+
+                    if boss_fase == 1 and boss_vida <= boss_vida_max * 0.5:
+                        boss_fase = 2
+
+                    if boss_vida <= 0:
+                        boss_activo = False
+                        victoria = True
+
+                    disparos_a_boss.append(disparo)
+
+                for disparo in disparos_a_boss:
+                    if disparo in disparos:
+                        disparos.remove(disparo)
+
+        # =========================
         # COLISION NAVE VS ASTEROIDES
         # =========================
 
@@ -618,6 +830,68 @@ while True:
                             asteroide_actual[1] = random.randint(0, ALTO)
 
                     break
+        
+        # =========================
+        # COLISION NAVE VS JEFE FINAL
+        # =========================
+
+        if boss_activo:
+
+            distancia_boss = math.sqrt(
+                (nave_x - boss_x) ** 2 +
+                (nave_y - boss_y) ** 2
+            )
+
+            if distancia_boss < boss_radio:
+
+                # Si tienes escudo
+                if escudo_activo:
+                    escudo_activo = False
+                else:
+                    vidas -= 1
+
+                    if vidas <= 0:
+                        vidas = 0
+                        game_over = True
+                        boss_activo = False
+
+                    else:
+                        # mover boss lejos para evitar spawn kill
+                        reposicionar_boss()
+
+                    # Reaparecer nave en el centro
+                    nave_x = ANCHO // 2
+                    nave_y = ALTO // 2
+
+                    velocidad_x = 0
+                    velocidad_y = 0
+
+        # =========================
+        # COLISION BALAS DEL BOSS
+        # =========================
+
+        for b in boss_disparos:
+
+            distancia = math.sqrt(
+                (nave_x - b[0]) ** 2 +
+                (nave_y - b[1]) ** 2
+            )
+
+            if distancia < 10:
+
+                if escudo_activo:
+                    escudo_activo = False
+                else:
+                    vidas -= 1
+
+                    if vidas <= 0:
+                        vidas = 0
+                        game_over = True
+                        boss_activo = False
+
+                boss_disparos.remove(b)
+                break
+        
 
 
     # =========================
@@ -657,7 +931,7 @@ while True:
     # APARICION POWER UP ESCUDO
     # =========================
 
-    if score >= 30000 and not powerup_escudo_aparecio:
+    if score >= 35000 and not powerup_escudo_aparecio:
 
         powerups.append([
             random.randint(100, ANCHO - 100),
@@ -673,7 +947,7 @@ while True:
     # APARICION POWER UP ROJO Triple
     # =========================
 
-    if score >= 70000 and not powerup_rojo_aparecio:
+    if score >= 50000 and not powerup_rojo_aparecio:
 
         powerups.append([
             random.randint(100, ANCHO - 100),
@@ -753,6 +1027,27 @@ while True:
                         powerups.remove(powerup)
 
     # =========================
+    # APARICION JEFE FINAL
+    # =========================
+
+    if score >= 100000 and not boss_activo and not boss_entrando:
+
+        boss_activo = True
+        boss_entrando = True
+        boss_activo_real = False
+
+        elegir_esquina_boss()
+
+        boss_x = boss_spawn_x
+        boss_y = boss_spawn_y
+
+        asteroides.clear()
+        powerups.clear()
+
+        mensaje = "BOSS INCOMING"
+        tiempo_mensaje = pygame.time.get_ticks()
+
+    # =========================
     # COLISION POWER UPS
     # =========================
 
@@ -770,20 +1065,29 @@ while True:
             # Power up de vida
             if powerup[2] == "vida":
                 vidas += 1
+                mensaje = "EXTRA LIFE AVAILABLE"
+                tiempo_mensaje = pygame.time.get_ticks()
 
             # Power up doble disparo
             if powerup[2] == "doble":
                 doble_disparo = True
+                mensaje = "DOUBLE SHOT AVAILABLE"
+                tiempo_mensaje = pygame.time.get_ticks()
 
             # Power up escudo
             if powerup[2] == "escudo":
                 escudo_activo = True
+                mensaje = "SHIELD AVAILABLE"
+                tiempo_mensaje = pygame.time.get_ticks()
+
 
             # Power up rojo (nuevo)
             if powerup[2] == "rojo":
                 triple_disparo = True
                 doble_disparo = False  # opcional: evita conflictos
                 disparo_seis = True
+                mensaje = "SIX SHOT AVAILABLE"
+                tiempo_mensaje = pygame.time.get_ticks()
 
             powerups_a_eliminar.append(powerup)
 
@@ -793,6 +1097,13 @@ while True:
         if powerup in powerups:
             powerups.remove(powerup)
 
+    # =========================
+    # LIMPIEZA DE MENSAJE
+    # =========================
+
+    if mensaje != "":
+        if pygame.time.get_ticks() - tiempo_mensaje > 2000:
+            mensaje = ""
 
     # =========================
     # DIBUJO
@@ -841,7 +1152,7 @@ while True:
         )
 
 
-        # Dibujar asteroides
+    # Dibujar asteroides
     for asteroide in asteroides:
 
         color_asteroide = (180, 180, 180)
@@ -857,6 +1168,60 @@ while True:
             2
         )
 
+    # =========================
+    # DIBUJAR JEFE FINAL
+    # =========================
+
+    if boss_activo:
+
+        # Color base (fase 1)
+        color_boss = (200, 0, 0)
+        borde_boss = (255, 100, 100)
+
+        # FASE 2: enojado (más rojo intenso)
+        if boss_fase == 2:
+            color_boss = (255, 0, 0)
+            borde_boss = (255, 255, 255)  # borde blanco agresivo
+
+        pygame.draw.circle(
+            pantalla,
+            color_boss,
+            (int(boss_x), int(boss_y)),
+            boss_radio
+        )
+
+        pygame.draw.circle(
+            pantalla,
+            borde_boss,
+            (int(boss_x), int(boss_y)),
+            boss_radio,
+            4
+        )
+
+        # =========================
+        # BARRA DE VIDA DEL JEFE
+        # =========================
+
+        # Fondo gris
+        pygame.draw.rect(
+            pantalla,
+            (60, 60, 60),
+            (ANCHO // 2 - 150, 20, 300, 20)
+        )
+
+        # Vida actual (rojo)
+        vida_porcentaje = boss_vida / boss_vida_max
+
+        if vida_porcentaje < 0:
+            vida_porcentaje = 0
+
+        pygame.draw.rect(
+            pantalla,
+            (255, 0, 0),
+            (ANCHO // 2 - 150, 20, int(300 * vida_porcentaje), 20)
+        )
+
+
     # Dibujar disparos
     for disparo in disparos:
 
@@ -865,6 +1230,14 @@ while True:
             (0, 255, 255),
             (int(disparo[0]), int(disparo[1])),
             3
+        )
+
+    for b in boss_disparos:
+        pygame.draw.circle(
+            pantalla,
+            (255, 50, 50),
+            (int(b[0]), int(b[1])),
+            5
         )
 
     # Dibujar power ups
@@ -915,9 +1288,25 @@ while True:
             )
         )
 
-        # =========================
-        # MOSTRAR SCORE
-        # =========================
+    if victoria:
+
+        texto_win = fuente.render(
+            "YOU WIN!",
+            True,
+            (0, 255, 0)
+        )
+
+        pantalla.blit(
+            texto_win,
+            (
+                ANCHO // 2 - 100,
+                ALTO // 2
+            )
+        )
+
+    # =========================
+    # MOSTRAR SCORE
+    # =========================
 
     texto_score = fuente.render(
     f"Score: {score}",
@@ -934,6 +1323,36 @@ while True:
     )
 
     pantalla.blit(texto_vidas, (20, 60))
+
+
+    if mensaje != "":
+
+
+
+        texto_mensaje = fuente.render(
+            mensaje,
+            True,
+            (255, 255, 0)
+        )
+
+        pantalla.blit(
+            texto_mensaje,
+            (ANCHO // 2 - 200, 100)
+        )
+
+    if boss_warning:
+
+        texto_warning = fuente.render(
+            f"BOSS FROM {boss_direccion_texto}",
+            True,
+            (255, 0, 0)
+        )
+
+        pantalla.blit(
+            texto_warning,
+            (ANCHO // 2 - 180, 200)
+        )
+
 
     pygame.display.update()
 

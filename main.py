@@ -35,7 +35,7 @@ game_over = False
 victoria = False
 
 doble_disparo = False
-triple_disparo = False
+triple_disparo = False #elimar
 disparo_seis = False
 escudo_activo = False
 
@@ -254,6 +254,85 @@ for i in range(3):
     ])
 
 # =========================
+# REINICIAR JUEGO
+# =========================
+
+def reiniciar_juego():
+    global score, vidas, mensaje, tiempo_mensaje, game_over, victoria
+    global doble_disparo, triple_disparo, disparo_seis, escudo_activo
+    global boss_activo, boss_entrando, boss_x, boss_y, boss_vida, boss_fase
+    global boss_disparos, boss_tiempo_disparo
+    global powerup_vida_aparecio, powerup_escudo_aparecio
+    global powerup_doble_aparecio, powerup_rojo_aparecio
+    global nave_x, nave_y, velocidad_x, velocidad_y, angulo
+    global disparos, asteroides, powerups
+
+    # Estado general
+    score = 0
+    vidas = 3
+    mensaje = ""
+    tiempo_mensaje = 0
+    game_over = False
+    victoria = False
+
+    # Power ups
+    doble_disparo = False
+    triple_disparo = False
+    disparo_seis = False
+    escudo_activo = False
+    powerup_vida_aparecio = False
+    powerup_escudo_aparecio = False
+    powerup_doble_aparecio = False
+    powerup_rojo_aparecio = False
+
+    # Jefe
+    boss_activo = False
+    boss_entrando = False
+    boss_x = 0
+    boss_y = 0
+    boss_vida = boss_vida_max
+    boss_fase = 1
+    boss_disparos = []
+    boss_tiempo_disparo = 0
+
+    # Nave
+    nave_x = ANCHO // 2
+    nave_y = ALTO // 2
+    velocidad_x = 0
+    velocidad_y = 0
+    angulo = 0
+
+    # Listas
+    disparos = []
+    powerups = []
+    asteroides = []
+
+    # Asteroides iniciales (3 grises + 3 rojos)
+    for i in range(6):
+        lado = random.randint(1, 4)
+
+        if lado == 1:
+            x = random.randint(0, ANCHO)
+            y = 0
+        elif lado == 2:
+            x = random.randint(0, ANCHO)
+            y = ALTO
+        elif lado == 3:
+            x = 0
+            y = random.randint(0, ALTO)
+        else:
+            x = ANCHO
+            y = random.randint(0, ALTO)
+
+        if i < 3:
+            asteroides.append([x, y,
+                               random.uniform(-2, 2), random.uniform(-2, 2),
+                               random.randint(20, 40), 1, "gris"])
+        else:
+            asteroides.append([x, y, 0, 0,
+                               random.randint(25, 45), 2, "rojo"])
+
+# =========================
 # BUCLE PRINCIPAL
 # =========================
 
@@ -268,6 +347,10 @@ while True:
         if evento.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+
+        if evento.type == pygame.KEYDOWN:
+            if evento.key == pygame.K_r and (game_over or victoria):
+                reiniciar_juego()    
                     # Disparo
         if evento.type == pygame.KEYDOWN:
 
@@ -504,7 +587,7 @@ while True:
                 asteroide[1] = ALTO
 
         # =========================
-        # MOVIMIENTO DEL JEFE (CORRECTO)
+        # MOVIMIENTO DEL JEFE
         # =========================
 
         if boss_activo:
@@ -632,7 +715,7 @@ while True:
                 # DIVISION DE ASTEROIDES
                 # =========================
 
-                if asteroide[6] == "gris" and asteroide[4] > 39: ################### división
+                if asteroide[6] == "gris" and asteroide[4] > 20: ################### división
 
                     for i in range(2):
 
@@ -898,7 +981,7 @@ while True:
     # APARICION POWER UP DOBLE
     # =========================
 
-    if score >= 12500 and not powerup_doble_aparecio:
+    if score >= 1500 and not powerup_doble_aparecio:
 
         powerups.append([
             random.randint(100, ANCHO - 100),
@@ -915,7 +998,7 @@ while True:
     # APARICION POWER UP VIDA
     # =========================
 
-    if score >= 25000 and not powerup_vida_aparecio:
+    if score >= 3000 and not powerup_vida_aparecio:
 
         powerups.append([
             random.randint(100, ANCHO - 100),
@@ -931,7 +1014,7 @@ while True:
     # APARICION POWER UP ESCUDO
     # =========================
 
-    if score >= 35000 and not powerup_escudo_aparecio:
+    if score >= 4000 and not powerup_escudo_aparecio:
 
         powerups.append([
             random.randint(100, ANCHO - 100),
@@ -947,7 +1030,7 @@ while True:
     # APARICION POWER UP ROJO Triple
     # =========================
 
-    if score >= 50000 and not powerup_rojo_aparecio:
+    if score >= 5000 and not powerup_rojo_aparecio:
 
         powerups.append([
             random.randint(100, ANCHO - 100),
@@ -1030,7 +1113,7 @@ while True:
     # APARICION JEFE FINAL
     # =========================
 
-    if score >= 100000 and not boss_activo and not boss_entrando:
+    if score >= 10000 and not boss_activo and not boss_entrando:
 
         boss_activo = True
         boss_entrando = True
@@ -1084,7 +1167,7 @@ while True:
             # Power up rojo (nuevo)
             if powerup[2] == "rojo":
                 triple_disparo = True
-                doble_disparo = False  # opcional: evita conflictos
+                doble_disparo = False  # o
                 disparo_seis = True
                 mensaje = "SIX SHOT AVAILABLE"
                 tiempo_mensaje = pygame.time.get_ticks()
@@ -1205,7 +1288,7 @@ while True:
         # Fondo gris
         pygame.draw.rect(
             pantalla,
-            (60, 60, 60),
+            (60, 60, 60), #colorgris
             (ANCHO // 2 - 150, 20, 300, 20)
         )
 
@@ -1227,7 +1310,7 @@ while True:
 
         pygame.draw.circle(
             pantalla,
-            (0, 255, 255),
+            (0, 255, 255), #celeseluminoso ayuda a ver mejor
             (int(disparo[0]), int(disparo[1])),
             3
         )
@@ -1267,7 +1350,7 @@ while True:
     # =========================
     # ACTUALIZAR
     # =========================
-
+  
     # =========================
     # GAME OVER
     # =========================
@@ -1304,6 +1387,16 @@ while True:
             )
         )
 
+        if game_over or victoria:
+            texto_reinicio = fuente.render(
+                "Presiona R para reiniciar",
+                True,
+                (255, 255, 255)
+            )
+            pantalla.blit(
+                texto_reinicio,
+                (ANCHO // 2 - 150, ALTO // 2 + 50)
+            )            
     # =========================
     # MOSTRAR SCORE
     # =========================
@@ -1326,6 +1419,7 @@ while True:
 
 
     if mensaje != "":
+
 
 
 
@@ -1356,4 +1450,4 @@ while True:
 
     pygame.display.update()
 
-    clock.tick(60)#aaaaaaa f
+    clock.tick(60)
